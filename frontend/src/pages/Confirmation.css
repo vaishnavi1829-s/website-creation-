@@ -1,0 +1,114 @@
+.confirmation {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+
+.conf-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.conf-success {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--success);
+  margin-bottom: 0.5rem;
+}
+
+.conf-ref {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.conf-ref strong {
+  color: var(--text);
+  font-family: monospace;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+}
+
+/* Ticket */
+.ticket {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 24px rgba(230, 57, 70, 0.08);
+}
+
+.ticket-header {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.ticket-header h2 {
+  color: white;
+  font-size: 1.5rem;
+}
+
+.ticket-body {
+  padding: 1.5rem;
+}
+
+.ticket-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.ticket-row:last-child {
+  border-bottom: none;
+}
+
+.ticket-label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.ticket-value {
+  font-weight: 600;
+  text-align: right;
+}
+
+.total-row {
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--border);
+}
+
+.ticket-total {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--success);
+}
+
+.ticket-footer {
+  background: var(--bg);
+  padding: 1rem 1.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.ticket-email {
+  margin-top: 0.25rem;
+  opacity: 0.7;
+}
+
+.conf-actions {
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .conf-success {
+    font-size: 1.4rem;
+  }
+
+  .ticket-header h2 {
+    font-size: 1.2rem;
+  }
+}

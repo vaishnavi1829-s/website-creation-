@@ -1,0 +1,18 @@
+import { Link } from 'react-router-dom';
+import './Navbar.css';
+
+export default function Navbar() {
+  return (
+    <nav className="navbar">
+      <div className="navbar-container">
+        <Link to="/" className="navbar-brand">
+          <span className="brand-icon">🎬</span>
+          <span className="brand-text">CineBook</span>
+        </Link>
+        <div className="navbar-links">
+          <Link to="/" className="nav-link">Movies</Link>
+        </div>
+      </div>
+    </nav>
+  );
+}
