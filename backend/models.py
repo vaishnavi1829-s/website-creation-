@@ -5,6 +5,32 @@ from datetime import datetime
 from database import Base
 
 
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(100), unique=True, nullable=False, index=True)
+    hashed_password = Column(String(255), nullable=False)
+    email = Column(String(255))
+    full_name = Column(String(150))
+    reset_token = Column(String(255), nullable=True)
+    reset_token_expires = Column(DateTime, nullable=True)
+
+    bookings = relationship("Booking", back_populates="user")
+
+
+class Theatre(Base):
+    __tablename__ = "theatres"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(200), nullable=False)
+    location = Column(String(300), nullable=False)
+    facilities = Column(Text, nullable=False)  # comma-separated
+    distance_km = Column(Float, nullable=False)  # approximate distance from Salem city center
+
+    screens = relationship("Screen", back_populates="theatre")
+
+
 class Movie(Base):
     __tablename__ = "movies"
 
@@ -16,6 +42,10 @@ class Movie(Base):
     genre = Column(String(100))
     language = Column(String(50))
     rating = Column(String(10))
+    release_year = Column(Integer)
+    imdb_rating = Column(Float)
+    trending = Column(Integer, default=0)
+    category = Column(String(50), default="")
 
     showtimes = relationship("Showtime", back_populates="movie")
 
@@ -24,11 +54,13 @@ class Screen(Base):
     __tablename__ = "screens"
 
     id = Column(Integer, primary_key=True, index=True)
+    theatre_id = Column(Integer, ForeignKey("theatres.id"), nullable=False)
     name = Column(String(100), nullable=False)
     capacity = Column(Integer)
     rows = Column(Integer)
     cols = Column(Integer)
 
+    theatre = relationship("Theatre", back_populates="screens")
     showtimes = relationship("Showtime", back_populates="screen")
     seats = relationship("Seat", back_populates="screen")
 
@@ -64,6 +96,7 @@ class Booking(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     booking_ref = Column(String(10), unique=True, nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     customer_name = Column(String(150), nullable=False)
     customer_email = Column(String(255), nullable=False)
     customer_phone = Column(String(20))
@@ -71,6 +104,7 @@ class Booking(Base):
     total_amount = Column(Float, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    user = relationship("User", back_populates="bookings")
     showtime = relationship("Showtime", back_populates="bookings")
     booking_seats = relationship("BookingSeat", back_populates="booking", cascade="all, delete-orphan")
 

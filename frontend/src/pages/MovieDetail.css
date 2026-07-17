@@ -1,164 +1,36 @@
-.movie-detail {
-  padding: 1rem 0;
-}
-
-.back-link {
-  display: inline-block;
-  margin-bottom: 1.5rem;
-  color: var(--text-muted);
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-.back-link:hover {
-  color: var(--text);
-}
-
-.movie-detail-layout {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 3rem;
-}
-
-.movie-detail-poster {
-  flex-shrink: 0;
-  width: 280px;
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.movie-detail-poster img {
-  width: 100%;
-  display: block;
-}
-
-.movie-detail-info {
-  flex: 1;
-}
-
-.movie-detail-info h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-}
-
-.movie-detail-meta {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.5rem;
-}
-
-.meta-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.meta-badge.rating {
-  background: rgba(210, 153, 29, 0.2);
-  color: var(--warning);
-}
-
-.meta-badge.genre {
-  background: rgba(230, 57, 70, 0.15);
-  color: var(--primary-light);
-}
-
-.meta-badge.duration {
-  background: var(--bg-elevated);
-  color: var(--text-muted);
-}
-
-.meta-badge.language {
-  background: var(--bg-elevated);
-  color: var(--text-muted);
-}
-
-.movie-detail-desc {
-  font-size: 1.05rem;
-  line-height: 1.7;
-  color: var(--text-muted);
-}
-
-/* Showtimes */
-.showtimes-section h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.text-muted {
-  color: var(--text-muted);
-}
-
-.showtime-group {
-  margin-bottom: 1.5rem;
-}
-
-.showtime-date {
-  font-size: 1rem;
-  color: var(--text-muted);
-  margin-bottom: 0.75rem;
-  font-weight: 500;
-}
-
-.showtime-chips {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.showtime-chip {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.75rem 1.25rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--text);
-  font-size: 0.9rem;
-  transition: all 0.2s;
-  cursor: pointer;
-}
-
-.showtime-chip:hover {
-  border-color: var(--primary);
-  background: var(--bg-elevated);
-  transform: translateY(-2px);
-}
-
-.chip-time {
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-.chip-screen {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-.chip-price {
-  font-weight: 600;
-  color: var(--success);
-}
-
+.movie-detail-page { }
+.movie-detail-hero { position: relative; background-size: cover; background-position: center; min-height: 500px; background-color: var(--bg-primary); }
+.detail-hero-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(10,10,15,0.95) 0%, rgba(10,10,15,0.7) 50%, rgba(10,10,15,0.9) 100%); }
+.detail-hero-content { position: relative; z-index: 1; display: flex; gap: 2.5rem; max-width: 1200px; margin: 0 auto; padding: 3rem 2rem; align-items: flex-start; }
+.detail-poster-col { flex-shrink: 0; }
+.detail-poster { width: 280px; border-radius: var(--radius); box-shadow: var(--shadow-lg); transition: transform var(--transition); }
+.detail-poster:hover { transform: scale(1.03); }
+.detail-info-col { padding-top: 0.5rem; }
+.detail-info-col h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; }
+.detail-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.25rem; }
+.detail-badge { display: inline-flex; align-items: center; padding: 0.3rem 0.75rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
+.imdb-badge-detail { background: rgba(255,215,0,0.15); border-color: rgba(255,215,0,0.3); color: var(--gold); }
+.cert-badge { background: rgba(230,57,70,0.15); border-color: rgba(230,57,70,0.3); color: var(--accent); }
+.detail-description { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; max-width: 600px; }
+.showtimes-section { max-width: 1200px; margin: 2rem auto; padding: 0 2rem 3rem; }
+.showtimes-section h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; padding-left: 0.75rem; border-left: 3px solid var(--accent); }
+.theatre-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.25rem; }
+.theatre-header { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.theatre-header h3 { font-size: 1.1rem; font-weight: 700; }
+.theatre-location { font-size: 0.8rem; color: var(--text-muted); }
+.theatre-facilities { font-size: 0.72rem; color: var(--accent); font-weight: 500; padding: 0.2rem 0.5rem; background: rgba(230,57,70,0.1); border-radius: 4px; }
+.showtimes-row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.showtime-chip { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.65rem 1.1rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: none; transition: all var(--transition); min-width: 130px; }
+.showtime-chip:hover { border-color: var(--accent); background: var(--bg-card-hover); transform: translateY(-2px); box-shadow: 0 4px 15px var(--accent-glow); }
+.chip-time { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
+.chip-screen { font-size: 0.72rem; color: var(--text-muted); }
+.chip-price { font-size: 0.9rem; font-weight: 700; color: var(--success); }
+.no-showtimes { color: var(--text-muted); text-align: center; padding: 2rem; }
 @media (max-width: 768px) {
-  .movie-detail-layout {
-    flex-direction: column;
-  }
-
-  .movie-detail-poster {
-    width: 100%;
-    max-width: 280px;
-    margin: 0 auto;
-  }
-
-  .movie-detail-info h1 {
-    font-size: 1.5rem;
-  }
+  .detail-hero-content { flex-direction: column; align-items: center; text-align: center; padding: 2rem 1rem; }
+  .detail-poster { width: 200px; }
+  .detail-info-col h1 { font-size: 1.6rem; }
+  .detail-badges { justify-content: center; }
+  .detail-description { max-width: 100%; }
+  .showtime-chip { min-width: 110px; padding: 0.5rem 0.75rem; }
 }

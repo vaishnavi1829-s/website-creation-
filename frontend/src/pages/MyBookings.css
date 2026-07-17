@@ -1,0 +1,150 @@
+.my-bookings-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.my-bookings-header {
+  margin-bottom: 2rem;
+}
+
+.my-bookings-header h1 {
+  font-size: 2rem;
+  color: #1a1a2e;
+  margin-bottom: 0.35rem;
+}
+
+.my-bookings-header p {
+  color: #666;
+}
+
+/* Empty state */
+.empty-state, .error-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.empty-icon, .error-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.empty-state h2, .error-state h2 {
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p, .error-state p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+/* Bookings list */
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.booking-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #e63946;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.booking-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.booking-card-left {
+  flex: 1;
+}
+
+.booking-ref {
+  font-size: 0.8rem;
+  color: #999;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  font-family: monospace;
+}
+
+.booking-movie {
+  font-size: 1.15rem;
+  color: #1a1a2e;
+  margin-bottom: 0.4rem;
+}
+
+.booking-meta {
+  font-size: 0.875rem;
+  color: #666;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.35rem;
+}
+
+.meta-sep {
+  color: #ccc;
+}
+
+.booking-seats {
+  font-size: 0.85rem;
+  color: #777;
+  font-family: monospace;
+}
+
+.booking-card-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  margin-left: 1.5rem;
+}
+
+.booking-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.booking-date {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.btn-small {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .booking-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .booking-card-right {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .booking-amount {
+    font-size: 1.2rem;
+  }
+}

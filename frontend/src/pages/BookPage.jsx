@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { fetchSeatMap, createBooking } from '../api';
 import './BookPage.css';
@@ -7,242 +7,146 @@ export default function BookPage() {
   const { showtimeId } = useParams();
   const navigate = useNavigate();
   const [seatMap, setSeatMap] = useState(null);
-  const [selectedSeats, setSelectedSeats] = useState(new Set());
+  const [selectedSeats, setSelectedSeats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Booking form
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [bookingError, setBookingError] = useState(null);
-  const [step, setStep] = useState(1); // 1 = seats, 2 = details
+  const [booking, setBooking] = useState(false);
+  const [form, setForm] = useState({ customer_name: '', customer_email: '', customer_phone: '' });
+  const [formError, setFormError] = useState(null);
 
   useEffect(() => {
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await fetchSeatMap(showtimeId);
-        setSeatMap(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
+    setLoading(true);
+    fetchSeatMap(showtimeId).then(data => {
+      setSeatMap(data);
+      setLoading(false);
+    }).catch(err => { setError(err.message); setLoading(false); });
   }, [showtimeId]);
 
-  const toggleSeat = useCallback((seat) => {
-    if (submitting) return;
-    setSelectedSeats((prev) => {
-      const next = new Set(prev);
-      if (next.has(seat.id)) {
-        next.delete(seat.id);
-      } else {
-        next.add(seat.id);
-      }
-      return next;
+  const toggleSeat = (seat) => {
+    if (seat.is_booked) return;
+    setSelectedSeats(prev => {
+      const exists = prev.find(s => s.id === seat.id);
+      if (exists) return prev.filter(s => s.id !== seat.id);
+      return [...prev, seat];
     });
-  }, [submitting]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) {
-      setBookingError('Name and email are required');
-      return;
-    }
+    setFormError(null);
+    if (selectedSeats.length === 0) { setFormError('Please select at least one seat.'); return; }
+    if (!form.customer_name.trim()) { setFormError('Please enter your name.'); return; }
+    if (!form.customer_email.trim()) { setFormError('Please enter your email.'); return; }
 
-    setSubmitting(true);
-    setBookingError(null);
-
+    setBooking(true);
     try {
-      const booking = await createBooking({
+      const result = await createBooking({
         showtime_id: parseInt(showtimeId),
-        customer_name: name.trim(),
-        customer_email: email.trim(),
-        customer_phone: phone.trim() || undefined,
-        seat_ids: Array.from(selectedSeats),
+        customer_name: form.customer_name.trim(),
+        customer_email: form.customer_email.trim(),
+        customer_phone: form.customer_phone.trim() || undefined,
+        seat_ids: selectedSeats.map(s => s.id),
       });
-      navigate(`/confirmation/${booking.booking_ref}`);
+      navigate(`/confirmation/${result.booking_ref}`);
     } catch (err) {
-      setBookingError(err.message);
-      setSubmitting(false);
+      setFormError(err.message);
+    } finally {
+      setBooking(false);
     }
   };
 
-  if (loading) return <div className="loading">Loading seat map...</div>;
-  if (error) return <div className="error">{error}</div>;
-  if (!seatMap) return <div className="error">Seat map not found</div>;
+  if (loading) return <div className="loading-container"><div className="loading-spinner" /><p>Loading seat map...</p></div>;
+  if (error) return <div className="loading-container"><p className="error-text">{error}</p><Link to="/" className="btn btn-primary">Back to Home</Link></div>;
+  if (!seatMap) return null;
 
-  // Build row/col grid
-  const grid = [];
-  for (let r = 0; r < seatMap.rows; r++) {
-    const rowSeats = seatMap.seats.filter(
-      (s) => s.row_label === String.fromCharCode(65 + r)
-    );
-    grid.push(rowSeats);
-  }
-
-  const totalPrice = selectedSeats.size * seatMap.price;
+  const rowLabels = [...new Set(seatMap.seats.map(s => s.row_label))].sort();
+  const cols = seatMap.cols;
+  const totalPrice = selectedSeats.length * seatMap.price;
 
   return (
     <div className="book-page">
-      <Link to="/" className="back-link">&larr; Back to Movies</Link>
-      <h1 className="book-title">Book Tickets</h1>
-      <p className="book-subtitle">
-        {seatMap.screen_name} — ${seatMap.price.toFixed(2)} per seat
-      </p>
+      <h1 className="book-title">Select Your Seats</h1>
+      <div className="book-meta">
+        <span className="book-screen-name">{seatMap.screen_name}</span>
+        <span className="book-price-tag">₹{seatMap.price.toFixed(0)} / seat</span>
+      </div>
+      {seatMap.theatre_name && (
+        <div className="book-theatre-info">
+          <h3>{seatMap.theatre_name}</h3>
+          <p>{seatMap.theatre_location}</p>
+        </div>
+      )}
 
-      {/* Step indicators */}
-      <div className="step-indicators">
-        <div className={`step ${step >= 1 ? 'active' : ''}`}>1. Choose Seats</div>
-        <div className="step-divider" />
-        <div className={`step ${step >= 2 ? 'active' : ''}`}>2. Your Details</div>
+      {/* Screen indicator */}
+      <div className="screen-indicator">
+        <div className="screen-curve">SCREEN</div>
       </div>
 
-      {step === 1 && (
-        <>
-          {/* Screen indicator */}
-          <div className="screen-indicator">
-            <div className="screen-curve" />
-            <span>SCREEN</span>
-          </div>
-
-          {/* Legend */}
-          <div className="seat-legend">
-            <div className="legend-item">
-              <div className="seat-box available" />
-              <span>Available</span>
+      {/* Seat grid */}
+      <div className="seat-grid">
+        {rowLabels.map(row => (
+          <div key={row} className="seat-row">
+            <span className="row-label">{row}</span>
+            <div className="seat-cells">
+              {Array.from({ length: cols }, (_, i) => {
+                const seat = seatMap.seats.find(s => s.row_label === row && s.seat_number === i + 1);
+                if (!seat) return <div key={`empty-${row}-${i}`} className="seat empty" />;
+                const isSelected = selectedSeats.some(s => s.id === seat.id);
+                return (
+                  <button
+                    key={seat.id}
+                    className={`seat ${seat.is_booked ? 'booked' : ''} ${isSelected ? 'selected' : ''}`}
+                    onClick={() => toggleSeat(seat)}
+                    disabled={seat.is_booked}
+                    title={`${row}${i+1} - ${seat.is_booked ? 'Booked' : isSelected ? 'Selected' : 'Available'}`}
+                  >
+                    {i + 1}
+                  </button>
+                );
+              })}
             </div>
-            <div className="legend-item">
-              <div className="seat-box selected" />
-              <span>Selected</span>
-            </div>
-            <div className="legend-item">
-              <div className="seat-box booked" />
-              <span>Booked</span>
-            </div>
+            <span className="row-label">{row}</span>
           </div>
+        ))}
+      </div>
 
-          {/* Seat Grid */}
-          <div className="seat-grid">
-            {grid.map((row, ri) => (
-              <div key={ri} className="seat-row">
-                <span className="row-label">
-                  {String.fromCharCode(65 + ri)}
-                </span>
-                <div className="seat-group">
-                  {row.map((seat) => {
-                    let className = 'seat';
-                    if (seat.is_booked) className += ' booked';
-                    else if (selectedSeats.has(seat.id)) className += ' selected';
-                    else className += ' available';
+      {/* Legend */}
+      <div className="seat-legend">
+        <span><span className="legend-dot available" /> Available</span>
+        <span><span className="legend-dot selected" /> Selected</span>
+        <span><span className="legend-dot booked" /> Booked</span>
+      </div>
 
-                    return (
-                      <button
-                        key={seat.id}
-                        className={className}
-                        disabled={seat.is_booked}
-                        onClick={() => toggleSeat(seat)}
-                        title={`${seat.row_label}${seat.seat_number}`}
-                      >
-                        {seat.seat_number}
-                      </button>
-                    );
-                  })}
-                </div>
-                <span className="row-label">
-                  {String.fromCharCode(65 + ri)}
-                </span>
-              </div>
-            ))}
-          </div>
+      {/* Booking form */}
+      <div className="booking-form-container">
+        <h2>Complete Your Booking</h2>
+        <div className="selected-summary">
+          <span>{selectedSeats.length} seat(s) selected: {selectedSeats.map(s => `${s.row_label}${s.seat_number}`).join(', ')}</span>
+          {selectedSeats.length > 0 && <span className="total-amount">Total: ₹{totalPrice.toFixed(0)}</span>}
+        </div>
 
-          {/* Summary and continue */}
-          <div className="seat-summary">
-            <div className="summary-info">
-              <span>{selectedSeats.size} seat{selectedSeats.size !== 1 ? 's' : ''} selected</span>
-              <span className="summary-price">${totalPrice.toFixed(2)}</span>
-            </div>
-            <button
-              className="btn btn-primary"
-              disabled={selectedSeats.size === 0}
-              onClick={() => setStep(2)}
-            >
-              Continue to Details
-            </button>
-          </div>
-        </>
-      )}
+        {formError && <div className="form-error">{formError}</div>}
 
-      {step === 2 && (
-        <>
-          <div className="review-section">
-            <h3>Your Selection</h3>
-            <div className="review-card">
-              <p><strong>Seats:</strong> {Array.from(selectedSeats).map((sid) => {
-                const seat = seatMap.seats.find((s) => s.id === sid);
-                return seat ? `${seat.row_label}${seat.seat_number}` : '';
-              }).join(', ')}</p>
-              <p><strong>Total:</strong> ${totalPrice.toFixed(2)}</p>
-              <button className="btn btn-secondary" onClick={() => setStep(1)}>
-                Change Seats
-              </button>
-            </div>
-          </div>
-
-          <form className="booking-form" onSubmit={handleSubmit}>
-            <h3>Your Details</h3>
-            {bookingError && <div className="error">{bookingError}</div>}
-
+        <form className="booking-form" onSubmit={handleSubmit}>
+          <div className="form-row">
             <div className="form-group">
-              <label htmlFor="name">Full Name *</label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="John Doe"
-                required
-              />
+              <label>Your Name *</label>
+              <input type="text" value={form.customer_name} onChange={e => setForm({...form, customer_name: e.target.value})} placeholder="Enter your name" required />
             </div>
-
             <div className="form-group">
-              <label htmlFor="email">Email *</label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="john@example.com"
-                required
-              />
+              <label>Email *</label>
+              <input type="email" value={form.customer_email} onChange={e => setForm({...form, customer_email: e.target.value})} placeholder="you@example.com" required />
             </div>
-
             <div className="form-group">
-              <label htmlFor="phone">Phone (optional)</label>
-              <input
-                id="phone"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="555-0100"
-              />
+              <label>Phone (optional)</label>
+              <input type="tel" value={form.customer_phone} onChange={e => setForm({...form, customer_phone: e.target.value})} placeholder="+91 98765 43210" />
             </div>
-
-            <button
-              type="submit"
-              className="btn btn-primary btn-block"
-              disabled={submitting}
-            >
-              {submitting ? 'Booking...' : `Confirm Booking — $${totalPrice.toFixed(2)}`}
-            </button>
-          </form>
-        </>
-      )}
+          </div>
+          <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={booking || selectedSeats.length === 0}>
+            {booking ? 'Booking...' : `Confirm Booking — ₹${totalPrice.toFixed(0)}`}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

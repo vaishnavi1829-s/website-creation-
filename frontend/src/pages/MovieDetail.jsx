@@ -1,105 +1,82 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { fetchMovie, fetchShowtimes } from '../api';
 import './MovieDetail.css';
 
 export default function MovieDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [movie, setMovie] = useState(null);
   const [showtimes, setShowtimes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        const [m, st] = await Promise.all([
-          fetchMovie(id),
-          fetchShowtimes(id),
-        ]);
-        setMovie(m);
-        setShowtimes(st);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
+    setLoading(true);
+    Promise.all([fetchMovie(id), fetchShowtimes(id)]).then(([m, s]) => {
+      setMovie(m);
+      setShowtimes(Array.isArray(s) ? s : s.showtimes || []);
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <div className="loading">Loading...</div>;
-  if (error) return <div className="error">{error}</div>;
-  if (!movie) return <div className="error">Movie not found</div>;
+  if (loading) return <div className="loading-container"><div className="loading-spinner" /><p>Loading...</p></div>;
+  if (!movie) return <div className="loading-container"><p>Movie not found.</p><Link to="/" className="btn btn-primary">Back</Link></div>;
 
-  // Group showtimes by date
-  const grouped = {};
-  showtimes.forEach((st) => {
-    const dateKey = new Date(st.start_time).toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-    });
-    if (!grouped[dateKey]) grouped[dateKey] = [];
-    grouped[dateKey].push(st);
+  const formatTime = (dt) => new Date(dt + 'Z').toLocaleString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true });
+
+  const theatreMap = {};
+  showtimes.forEach(st => {
+    const key = st.theatre_name || 'Unknown Theatre';
+    if (!theatreMap[key]) theatreMap[key] = { location: st.theatre_location, facilities: st.theatre_facilities, showtimes: [] };
+    theatreMap[key].showtimes.push(st);
   });
 
   return (
-    <div className="movie-detail">
-      <Link to="/" className="back-link">&larr; Back to Movies</Link>
-
-      <div className="movie-detail-layout">
-        <div className="movie-detail-poster">
-          <img
-            src={movie.poster_url || 'https://picsum.photos/seed/default/400/600'}
-            alt={movie.title}
-          />
-        </div>
-
-        <div className="movie-detail-info">
-          <h1>{movie.title}</h1>
-          <div className="movie-detail-meta">
-            {movie.rating && <span className="meta-badge rating">{movie.rating}</span>}
-            {movie.genre && <span className="meta-badge genre">{movie.genre}</span>}
-            {movie.duration_min && <span className="meta-badge duration">{movie.duration_min} min</span>}
-            {movie.language && <span className="meta-badge language">{movie.language}</span>}
+    <div className="movie-detail-page">
+      <div className="movie-detail-hero">
+        <div className="detail-hero-overlay" />
+        <div className="detail-hero-content animate-fade-in-up">
+          <div className="detail-poster-col">
+            <img src={`/api/posters/${movie.id}`} alt={movie.title} className="detail-poster" />
           </div>
-          <p className="movie-detail-desc">{movie.description}</p>
+          <div className="detail-info-col">
+            <h1>{movie.title}</h1>
+            <div className="detail-badges">
+              {movie.imdb_rating && <span className="detail-badge imdb-badge-detail">★ {movie.imdb_rating}</span>}
+              {movie.language && <span className="detail-badge">{movie.language}</span>}
+              {movie.genre && <span className="detail-badge">{movie.genre}</span>}
+              {movie.rating && <span className="detail-badge cert-badge">{movie.rating}</span>}
+              {movie.release_year && <span className="detail-badge">{movie.release_year}</span>}
+              {movie.duration_min && <span className="detail-badge">{Math.floor(movie.duration_min/60)}h {movie.duration_min%60}m</span>}
+            </div>
+            <p className="detail-description">{movie.description}</p>
+          </div>
         </div>
       </div>
 
       <div className="showtimes-section">
-        <h2>Showtimes</h2>
-        {showtimes.length === 0 && (
-          <p className="text-muted">No showtimes available for this movie.</p>
-        )}
-
-        {Object.entries(grouped).map(([date, times]) => (
-          <div key={date} className="showtime-group">
-            <h3 className="showtime-date">{date}</h3>
-            <div className="showtime-chips">
-              {times.map((st) => (
-                <button
-                  key={st.id}
-                  className="showtime-chip"
-                  onClick={() => navigate(`/book/${st.id}`)}
-                >
-                  <span className="chip-time">
-                    {new Date(st.start_time).toLocaleTimeString('en-US', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </span>
-                  <span className="chip-screen">{st.screen_name}</span>
-                  <span className="chip-price">${st.price.toFixed(2)}</span>
-                </button>
-              ))}
+        <h2>Select Theatre & Showtime</h2>
+        {showtimes.length === 0 ? (
+          <p className="no-showtimes">No showtimes available.</p>
+        ) : (
+          Object.entries(theatreMap).map(([theatreName, data]) => (
+            <div key={theatreName} className="theatre-block">
+              <div className="theatre-header">
+                <h3>{theatreName}</h3>
+                <span className="theatre-location">{data.location}</span>
+                <span className="theatre-facilities">{data.facilities}</span>
+              </div>
+              <div className="showtimes-row">
+                {data.showtimes.map(st => (
+                  <Link key={st.id} to={`/book/${st.id}`} className="showtime-chip">
+                    <span className="chip-time">{formatTime(st.start_time)}</span>
+                    <span className="chip-screen">{st.screen_name}</span>
+                    <span className="chip-price">₹{st.price.toFixed(0)}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
