@@ -45,6 +45,7 @@ def _booking_to_out(booking: Booking) -> BookingOut:
         customer_phone=booking.customer_phone,
         showtime_id=booking.showtime_id,
         total_amount=booking.total_amount,
+        payment_method=booking.payment_method,
         created_at=booking.created_at,
         movie_title=booking.showtime.movie.title,
         screen_name=booking.showtime.screen.name,
@@ -102,6 +103,7 @@ def create_booking(
         customer_phone=data.customer_phone,
         showtime_id=data.showtime_id,
         total_amount=total,
+        payment_method=data.payment_method,
     )
     db.add(booking)
     db.flush()

@@ -128,6 +128,23 @@
   font-size: 0.8rem;
 }
 
+.btn-download {
+  background: var(--success, #38b000);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.btn-download:hover {
+  background: #2d9200;
+  transform: translateY(-1px);
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .booking-card {

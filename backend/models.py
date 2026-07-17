@@ -102,6 +102,7 @@ class Booking(Base):
     customer_phone = Column(String(20))
     showtime_id = Column(Integer, ForeignKey("showtimes.id"), nullable=False)
     total_amount = Column(Float, nullable=False)
+    payment_method = Column(String(20), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="bookings")

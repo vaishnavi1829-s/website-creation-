@@ -217,8 +217,112 @@
 
 .error-text { color: var(--danger); }
 
+/* ── Payment Step ── */
+.payment-step {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.payment-instruction {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: left;
+  width: 100%;
+}
+
+.payment-option:hover {
+  border-color: var(--accent);
+  background: var(--bg-card-hover);
+}
+
+.payment-option.active {
+  border-color: var(--accent);
+  background: rgba(230, 57, 70, 0.06);
+  box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.15);
+}
+
+.payment-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.payment-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.payment-upi {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+.payment-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.payment-actions .btn-primary {
+  flex: 1;
+}
+
+.payment-actions .btn-secondary {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.payment-actions .btn-secondary:hover {
+  background: var(--bg-card-hover);
+}
+
+/* ── Processing Step ── */
+.processing-step {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.processing-step p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 1rem;
+}
+
+.processing-hint {
+  font-size: 0.8rem !important;
+  color: var(--text-muted) !important;
+  margin-top: 0.5rem !important;
+}
+
 @media (max-width: 768px) {
   .seat { width: 26px; height: 24px; font-size: 0.6rem; }
   .form-row { grid-template-columns: 1fr; }
   .seat-cells { gap: 0.15rem; }
+  .payment-option { padding: 0.75rem 1rem; }
+  .payment-icon { font-size: 1.3rem; }
+  .payment-name { font-size: 0.9rem; }
+  .payment-upi { font-size: 0.7rem; }
 }

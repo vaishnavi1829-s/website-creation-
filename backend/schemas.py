@@ -120,6 +120,7 @@ class BookingCreate(BaseModel):
     customer_email: str
     customer_phone: Optional[str] = None
     seat_ids: list[int]
+    payment_method: Optional[str] = None
 
 
 class BookingSeatOut(BaseModel):
@@ -137,6 +138,7 @@ class BookingOut(BaseModel):
     customer_phone: Optional[str] = None
     showtime_id: int
     total_amount: float
+    payment_method: Optional[str] = None
     created_at: datetime
     movie_title: Optional[str] = None
     screen_name: Optional[str] = None

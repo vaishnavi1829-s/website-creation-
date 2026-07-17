@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchBooking } from '../api';
+import { downloadTicketPdf } from '../ticketPdf';
 import './Confirmation.css';
 
 export default function Confirmation() {
@@ -63,7 +64,12 @@ export default function Confirmation() {
           </div>
         </div>
 
-        <Link to="/" className="btn btn-primary btn-block">Back to Home</Link>
+        <div className="confirmation-actions">
+          <button className="btn btn-download" onClick={() => downloadTicketPdf(booking)}>
+            📥 Download Ticket (PDF)
+          </button>
+          <Link to="/" className="btn btn-primary btn-block">Back to Home</Link>
+        </div>
       </div>
     </div>
   );

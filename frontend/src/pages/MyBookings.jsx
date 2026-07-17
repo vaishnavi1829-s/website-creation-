@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { fetchMyBookings, isLoggedIn } from '../api';
+import { downloadTicketPdf } from '../ticketPdf';
 import './MyBookings.css';
 
 export default function MyBookings() {
@@ -90,6 +91,9 @@ export default function MyBookings() {
                   <Link to={`/confirmation/${booking.booking_ref}`} className="btn btn-small btn-secondary">
                     View Ticket
                   </Link>
+                  <button className="btn btn-small btn-download" onClick={() => downloadTicketPdf(booking)}>
+                    📥 PDF
+                  </button>
                 </div>
               </div>
             );

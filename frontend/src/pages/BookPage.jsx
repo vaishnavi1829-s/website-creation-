@@ -13,6 +13,8 @@ export default function BookPage() {
   const [booking, setBooking] = useState(false);
   const [form, setForm] = useState({ customer_name: '', customer_email: '', customer_phone: '' });
   const [formError, setFormError] = useState(null);
+  const [step, setStep] = useState('details'); // 'details' | 'payment' | 'processing'
+  const [paymentMethod, setPaymentMethod] = useState(null); // 'phonepe' | 'gpay' | 'paytm'
 
   useEffect(() => {
     setLoading(true);
@@ -31,12 +33,21 @@ export default function BookPage() {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleProceedToPayment = (e) => {
     e.preventDefault();
     setFormError(null);
     if (selectedSeats.length === 0) { setFormError('Please select at least one seat.'); return; }
     if (!form.customer_name.trim()) { setFormError('Please enter your name.'); return; }
     if (!form.customer_email.trim()) { setFormError('Please enter your email.'); return; }
+    setStep('payment');
+  };
+
+  const handlePayNow = async () => {
+    if (!paymentMethod) return;
+    setStep('processing');
+
+    // Simulate payment processing delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     setBooking(true);
     try {
@@ -46,10 +57,12 @@ export default function BookPage() {
         customer_email: form.customer_email.trim(),
         customer_phone: form.customer_phone.trim() || undefined,
         seat_ids: selectedSeats.map(s => s.id),
+        payment_method: paymentMethod,
       });
       navigate(`/confirmation/${result.booking_ref}`);
     } catch (err) {
       setFormError(err.message);
+      setStep('payment');
     } finally {
       setBooking(false);
     }
@@ -119,7 +132,7 @@ export default function BookPage() {
 
       {/* Booking form */}
       <div className="booking-form-container">
-        <h2>Complete Your Booking</h2>
+        <h2>{step === 'payment' ? 'Choose Payment Method' : step === 'processing' ? 'Processing Payment...' : 'Complete Your Booking'}</h2>
         <div className="selected-summary">
           <span>{selectedSeats.length} seat(s) selected: {selectedSeats.map(s => `${s.row_label}${s.seat_number}`).join(', ')}</span>
           {selectedSeats.length > 0 && <span className="total-amount">Total: ₹{totalPrice.toFixed(0)}</span>}
@@ -127,25 +140,86 @@ export default function BookPage() {
 
         {formError && <div className="form-error">{formError}</div>}
 
-        <form className="booking-form" onSubmit={handleSubmit}>
-          <div className="form-row">
-            <div className="form-group">
-              <label>Your Name *</label>
-              <input type="text" value={form.customer_name} onChange={e => setForm({...form, customer_name: e.target.value})} placeholder="Enter your name" required />
+        {/* STEP 1: Customer Details */}
+        {step === 'details' && (
+          <form className="booking-form" onSubmit={handleProceedToPayment}>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Your Name *</label>
+                <input type="text" value={form.customer_name} onChange={e => setForm({...form, customer_name: e.target.value})} placeholder="Enter your name" required />
+              </div>
+              <div className="form-group">
+                <label>Email *</label>
+                <input type="email" value={form.customer_email} onChange={e => setForm({...form, customer_email: e.target.value})} placeholder="you@example.com" required />
+              </div>
+              <div className="form-group">
+                <label>Phone (optional)</label>
+                <input type="tel" value={form.customer_phone} onChange={e => setForm({...form, customer_phone: e.target.value})} placeholder="+91 98765 43210" />
+              </div>
             </div>
-            <div className="form-group">
-              <label>Email *</label>
-              <input type="email" value={form.customer_email} onChange={e => setForm({...form, customer_email: e.target.value})} placeholder="you@example.com" required />
+            <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={selectedSeats.length === 0}>
+              Proceed to Pay — ₹{totalPrice.toFixed(0)}
+            </button>
+          </form>
+        )}
+
+        {/* STEP 2: Payment Selection */}
+        {step === 'payment' && (
+          <div className="payment-step">
+            <p className="payment-instruction">Select a UPI payment method to complete your booking of ₹{totalPrice.toFixed(0)}</p>
+
+            <div className="payment-options">
+              <button
+                className={`payment-option${paymentMethod === 'phonepe' ? ' active' : ''}`}
+                onClick={() => setPaymentMethod('phonepe')}
+              >
+                <span className="payment-icon">📱</span>
+                <span className="payment-name">PhonePe</span>
+                <span className="payment-upi">UPI ID: cinebook@phonepe</span>
+              </button>
+
+              <button
+                className={`payment-option${paymentMethod === 'gpay' ? ' active' : ''}`}
+                onClick={() => setPaymentMethod('gpay')}
+              >
+                <span className="payment-icon">💳</span>
+                <span className="payment-name">Google Pay</span>
+                <span className="payment-upi">UPI ID: cinebook@okhdfc</span>
+              </button>
+
+              <button
+                className={`payment-option${paymentMethod === 'paytm' ? ' active' : ''}`}
+                onClick={() => setPaymentMethod('paytm')}
+              >
+                <span className="payment-icon">💰</span>
+                <span className="payment-name">Paytm</span>
+                <span className="payment-upi">UPI ID: cinebook@paytm</span>
+              </button>
             </div>
-            <div className="form-group">
-              <label>Phone (optional)</label>
-              <input type="tel" value={form.customer_phone} onChange={e => setForm({...form, customer_phone: e.target.value})} placeholder="+91 98765 43210" />
+
+            <div className="payment-actions">
+              <button className="btn btn-secondary" onClick={() => setStep('details')}>
+                ← Back
+              </button>
+              <button
+                className="btn btn-primary btn-lg"
+                disabled={!paymentMethod}
+                onClick={handlePayNow}
+              >
+                Pay ₹{totalPrice.toFixed(0)} with {paymentMethod === 'phonepe' ? 'PhonePe' : paymentMethod === 'gpay' ? 'GPay' : paymentMethod === 'paytm' ? 'Paytm' : 'UPI'}
+              </button>
             </div>
           </div>
-          <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={booking || selectedSeats.length === 0}>
-            {booking ? 'Booking...' : `Confirm Booking — ₹${totalPrice.toFixed(0)}`}
-          </button>
-        </form>
+        )}
+
+        {/* STEP 3: Processing */}
+        {step === 'processing' && (
+          <div className="processing-step">
+            <div className="loading-spinner" />
+            <p>Processing your payment via {paymentMethod === 'phonepe' ? 'PhonePe' : paymentMethod === 'gpay' ? 'Google Pay' : 'Paytm'}...</p>
+            <p className="processing-hint">Please do not close this page</p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -82,3 +82,28 @@
   color: var(--success);
   font-size: 1.2rem;
 }
+
+.confirmation-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn-download {
+  background: var(--success, #38b000);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-download:hover {
+  background: #2d9200;
+  transform: translateY(-1px);
+}
