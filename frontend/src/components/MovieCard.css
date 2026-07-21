@@ -1,128 +1,215 @@
+/* ── BookMyShow-style Horizontal Movie Card ── */
+
 .movie-card {
-  display: block;
+  display: flex;
   background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
-  transition: transform var(--transition), box-shadow var(--transition);
+  transition: all 0.3s ease;
   text-decoration: none;
   color: inherit;
-  position: relative;
+  cursor: pointer;
 }
 
 .movie-card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-lg), 0 0 30px var(--accent-glow);
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 8px 32px rgba(230, 57, 70, 0.15), var(--shadow-md);
 }
 
+/* ── Poster ── */
 .movie-card-poster {
   position: relative;
-  width: 100%;
-  padding-top: 150%;
+  flex-shrink: 0;
+  width: 90px;
+  height: 130px;
   overflow: hidden;
   background: var(--bg-secondary);
 }
 
 .movie-card-poster img {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   transition: transform 0.5s ease;
 }
 
 .movie-card:hover .movie-card-poster img {
-  transform: scale(1.08);
+  transform: scale(1.12);
 }
 
-.movie-card-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 50%);
+/* ── Poster Placeholder ── */
+.poster-placeholder {
+  width: 100%;
+  height: 100%;
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding-bottom: 1.5rem;
-  opacity: 0;
-  transition: opacity var(--transition);
+  gap: 6px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
 }
 
-.movie-card:hover .movie-card-overlay {
-  opacity: 1;
+.placeholder-icon {
+  width: 36px;
+  height: 36px;
+  opacity: 0.6;
 }
 
-.book-now-btn {
-  font-size: 0.85rem;
-  padding: 0.5rem 1.25rem;
-  animation: fadeInUp 0.3s ease;
+.placeholder-text {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
+/* ── Badges ── */
 .imdb-badge {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(0,0,0,0.8);
+  top: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(4px);
   color: var(--gold);
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
-  font-size: 0.8rem;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 0.65rem;
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 0.2rem;
+  gap: 2px;
+  line-height: 1.2;
 }
 
-.imdb-star { font-size: 0.9rem; }
+.imdb-star {
+  font-size: 0.7rem;
+}
 
-.movie-card-info {
-  padding: 0.85rem;
+.rating-badge {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  background: var(--accent);
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* ── Details ── */
+.movie-card-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  gap: 0.4rem;
 }
 
 .movie-card-title {
   font-size: 0.95rem;
   font-weight: 700;
-  margin-bottom: 0.45rem;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.movie-card:hover .movie-card-title {
+  color: var(--accent);
 }
 
 .movie-card-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-bottom: 0.4rem;
+  gap: 0.3rem;
 }
 
 .meta-tag {
-  font-size: 0.7rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
+  font-size: 0.65rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 3px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
+  line-height: 1.5;
 }
 
-.lang-tag { background: #2d4059; color: #81c784; }
-.genre-tag { background: #3a2d40; color: #ce93d8; }
-.rating-tag { background: #2d4039; color: #80cbc4; }
+.lang-tag {
+  background: #2d4059;
+  color: #81c784;
+}
 
-.movie-card-details {
+.genre-tag {
+  background: #3a2d40;
+  color: #ce93d8;
+}
+
+.cert-tag {
+  background: rgba(230, 57, 70, 0.15);
+  color: var(--accent);
+}
+
+.movie-card-sub {
   display: flex;
   gap: 0.75rem;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
 }
 
-/* Grid responsive */
-.movies-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 1.25rem;
+.sub-item {
+  position: relative;
 }
 
-@media (max-width: 1200px) { .movies-grid { grid-template-columns: repeat(5, 1fr); } }
-@media (max-width: 992px)  { .movies-grid { grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 768px)  { .movies-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 576px)  { .movies-grid { grid-template-columns: repeat(2, 1fr); } }
+.sub-item + .sub-item::before {
+  content: '•';
+  position: absolute;
+  left: -0.5rem;
+  color: var(--text-muted);
+}
+
+.movie-card-actions {
+  margin-top: auto;
+  padding-top: 0.3rem;
+}
+
+.book-btn {
+  font-size: 0.75rem;
+  padding: 0.35rem 1rem;
+  border-radius: 4px;
+}
+
+/* ── Grid Layout ── */
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 1200px) {
+  .movies-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .movies-grid { grid-template-columns: 1fr; }
+
+  .movie-card-poster {
+    width: 80px;
+    height: 115px;
+  }
+
+  .movie-card-details {
+    padding: 0.6rem 0.75rem;
+    gap: 0.3rem;
+  }
+
+  .movie-card-title {
+    font-size: 0.85rem;
+  }
+}

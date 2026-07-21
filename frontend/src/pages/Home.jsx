@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { fetchMovies } from '../api';
+import { fetchMovies, fetchNowShowingMovies, fetchShowtimes, fetchTheatres } from '../api';
 import MovieCard from '../components/MovieCard';
 import './Home.css';
 
@@ -16,10 +16,72 @@ const SECTION_ORDER = [
 export default function Home({ search, filters }) {
   const [allMovies, setAllMovies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [nowShowingMovies, setNowShowingMovies] = useState([]);
+  const [nowShowingByTheatre, setNowShowingByTheatre] = useState([]);
+  const [showtimesLoading, setShowtimesLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
     fetchMovies().then(data => { setAllMovies(data.movies || []); setLoading(false); }).catch(() => setLoading(false));
+  }, []);
+
+  // Fetch now-showing data: theatres + showtimes grouped by theatre
+  useEffect(() => {
+    setShowtimesLoading(true);
+    Promise.all([
+      fetchTheatres(),
+      fetchNowShowingMovies(7),
+      fetchShowtimes(),
+    ])
+      .then(([theatres, nowMovies, showtimes]) => {
+        setNowShowingMovies(nowMovies);
+        // Build theatre -> movies -> showtimes mapping
+        const movieMap = {};
+        nowMovies.forEach(m => { movieMap[m.id] = m; });
+
+        const theatreMap = {};
+        theatres.forEach(t => {
+          theatreMap[t.id] = { ...t, movies: [] };
+        });
+
+        const theatreMovieMap = {}; // theatre_id -> { movie_id -> { movie, showtimes[] } }
+        showtimes.forEach(st => {
+          const tid = null; // theatre_id not directly on showtime, we need the screen join
+          // Actually showtimes returned from API have theatre_name etc. but not theatre_id.
+          // We'll group by theatre_name instead.
+          const key = st.theatre_name || 'Unknown';
+          if (!theatreMovieMap[key]) {
+            theatreMovieMap[key] = {
+              name: key,
+              location: st.theatre_location || '',
+              facilities: st.theatre_facilities || '',
+              movies: {},
+            };
+          }
+          if (!theatreMovieMap[key].movies[st.movie_id]) {
+            theatreMovieMap[key].movies[st.movie_id] = {
+              movie: movieMap[st.movie_id],
+              showtimes: [],
+            };
+          }
+          if (theatreMovieMap[key].movies[st.movie_id]) {
+            theatreMovieMap[key].movies[st.movie_id].showtimes.push(st);
+          }
+        });
+
+        // Convert to array and sort showtimes; only include theatres with showtimes
+        const grouped = Object.values(theatreMovieMap)
+          .map(t => ({
+            ...t,
+            movies: Object.values(t.movies).filter(m => m.movie && m.showtimes.length > 0),
+          }))
+          .filter(t => t.movies.length > 0)
+          .sort((a, b) => b.movies.length - a.movies.length);
+
+        setNowShowingByTheatre(grouped);
+        setShowtimesLoading(false);
+      })
+      .catch(() => setShowtimesLoading(false));
   }, []);
 
   // Filter based on search + active filters
@@ -70,6 +132,16 @@ export default function Home({ search, filters }) {
     );
   }
 
+  const formatShowtime = (iso) => {
+    const d = new Date(iso);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+  };
+
+  const formatDate = (iso) => {
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+  };
+
   return (
     <div className="home-page">
       {/* Hero banner */}
@@ -80,6 +152,86 @@ export default function Home({ search, filters }) {
         </div>
         <div className="hero-overlay" />
       </div>
+
+      {/* Now Showing by Theatre */}
+      {!showtimesLoading && nowShowingByTheatre.length > 0 && (
+        <div className="now-showing-section section-container animate-fade-in-up">
+          <h2 className="section-title">🎬 Now Showing in Theatres</h2>
+          <div className="theatre-list">
+            {nowShowingByTheatre.map(theatre => (
+              <div key={theatre.name} className="theatre-group">
+                <div className="theatre-header">
+                  <h3 className="theatre-name">{theatre.name}</h3>
+                  <span className="theatre-location">{theatre.location}</span>
+                </div>
+                <div className="theatre-movies">
+                  {theatre.movies.map(({ movie, showtimes }) => {
+                    // Group showtimes by date
+                    const byDate = {};
+                    showtimes.forEach(st => {
+                      const d = formatDate(st.start_time);
+                      if (!byDate[d]) byDate[d] = [];
+                      byDate[d].push(st);
+                    });
+                    return (
+                      <div key={movie.id} className="theatre-movie-card">
+                        <div className="tms-poster" onClick={() => window.location.href = `/movie/${movie.id}`}>
+                          <img
+                            src={`/api/posters/${movie.id}`}
+                            alt={movie.title}
+                            loading="lazy"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextElementSibling.style.display = 'flex';
+                            }}
+                          />
+                          <div className="tms-no-poster" style={{ display: 'none' }}>
+                            <svg className="tms-placeholder-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <rect width="48" height="48" rx="6" fill="#1a1a2e" stroke="#3a3a55" strokeWidth="1.5" />
+                              <path d="M16 32V16l10 8-10 8z" fill="#6b6b80" />
+                              <rect x="28" y="16" width="8" height="16" rx="1" fill="#6b6b80" />
+                            </svg>
+                            <span className="tms-placeholder-text">No Poster</span>
+                          </div>
+                        </div>
+                        <div className="tms-details">
+                          <h4
+                            className="tms-title"
+                            onClick={() => window.location.href = `/movie/${movie.id}`}
+                          >
+                            {movie.title}
+                          </h4>
+                          <span className="tms-meta">
+                            {movie.language} • {movie.rating} • {movie.duration_min} min
+                          </span>
+                          <div className="tms-showtimes">
+                            {Object.entries(byDate).slice(0, 3).map(([date, sts]) => (
+                              <div key={date} className="tms-date-group">
+                                <span className="tms-date">{date}</span>
+                                <div className="tms-times">
+                                  {sts.slice(0, 4).map(st => (
+                                    <button
+                                      key={st.id}
+                                      className="tms-time-btn"
+                                      onClick={() => window.location.href = `/book/${movie.id}`}
+                                    >
+                                      {formatShowtime(st.start_time)}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {SECTION_ORDER.map(section => {
         let sectionMovies;

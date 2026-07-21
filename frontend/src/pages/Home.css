@@ -102,9 +102,197 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ── Now Showing by Theatre ── */
+.now-showing-section {
+  margin-top: -1rem;
+}
+
+.theatre-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.theatre-group {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.theatre-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.9rem 1.25rem;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.theatre-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.theatre-location {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.theatre-movies {
+  display: flex;
+  flex-direction: column;
+}
+
+.theatre-movie-card {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+
+.theatre-movie-card:last-child {
+  border-bottom: none;
+}
+
+.theatre-movie-card:hover {
+  background: var(--bg-card-hover);
+}
+
+.tms-poster {
+  flex-shrink: 0;
+  width: 90px;
+  height: 130px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+  background: var(--bg-surface);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+
+.tms-poster:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+.tms-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tms-poster .no-poster,
+.tms-no-poster {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.tms-placeholder-icon {
+  width: 28px;
+  height: 28px;
+  opacity: 0.5;
+}
+
+.tms-placeholder-text {
+  font-size: 0.55rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.tms-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.tms-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: color var(--transition);
+}
+
+.tms-title:hover {
+  color: var(--accent);
+}
+
+.tms-meta {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.tms-showtimes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+.tms-date-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.tms-date {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  min-width: 70px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.tms-times {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.tms-time-btn {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.tms-time-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 12px var(--accent-glow);
+  transform: translateY(-1px);
+}
+
 @media (max-width: 768px) {
   .hero-banner { height: 280px; }
   .hero-content h1 { font-size: 1.8rem; }
   .hero-content p { font-size: 0.95rem; }
   .section-title { font-size: 1.15rem; }
+  .theatre-header { flex-direction: column; align-items: flex-start; }
+  .theatre-movie-card { flex-direction: row; gap: 0.75rem; }
+  .tms-poster { width: 80px; height: 115px; }
+  .tms-date { min-width: 55px; font-size: 0.7rem; }
+  .tms-time-btn { font-size: 0.72rem; padding: 0.3rem 0.6rem; }
 }

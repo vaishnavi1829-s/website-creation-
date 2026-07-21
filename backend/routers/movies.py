@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 from typing import Optional
+from datetime import datetime, timedelta
 
 from database import get_db
-from models import Movie
+from models import Movie, Showtime, Screen, Theatre
 from schemas import MovieOut, MovieListOut
 
 router = APIRouter(prefix="/api/movies", tags=["Movies"])
@@ -50,6 +51,37 @@ def list_movies(
         movies=[MovieOut.model_validate(m) for m in movies],
         genres=genres,
     )
+
+
+@router.get("/now-showing", response_model=list[MovieOut])
+def now_showing(
+    days: Optional[int] = Query(7, ge=1, le=30),
+    db: Session = Depends(get_db),
+):
+    """Return movies that have showtimes from today through the next N days."""
+    now = datetime.utcnow()
+    start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    end = start + timedelta(days=days)
+
+    # Get distinct movie IDs with showtimes in the window
+    movie_ids = (
+        db.query(Showtime.movie_id)
+        .filter(Showtime.start_time >= start, Showtime.start_time < end)
+        .distinct()
+        .all()
+    )
+    ids = [m[0] for m in movie_ids]
+
+    if not ids:
+        return []
+
+    movies = (
+        db.query(Movie)
+        .filter(Movie.id.in_(ids))
+        .order_by(Movie.trending.desc(), Movie.imdb_rating.desc())
+        .all()
+    )
+    return [MovieOut.model_validate(m) for m in movies]
 
 
 @router.get("/{movie_id}", response_model=MovieOut)

@@ -38,6 +38,12 @@ export async function fetchMovie(id) {
   return res.json();
 }
 
+export async function fetchNowShowingMovies(days = 7) {
+  const res = await fetch(`${API_BASE}/movies/now-showing?days=${days}`);
+  if (!res.ok) throw new Error('Failed to fetch now showing movies');
+  return res.json();
+}
+
 // --- Theatres ---
 export async function fetchTheatres() {
   const res = await fetch(`${API_BASE}/theatres`);
