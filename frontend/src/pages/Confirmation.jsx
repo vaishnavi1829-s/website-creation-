@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchBooking } from '../api';
 import { downloadTicketPdf } from '../ticketPdf';
+import { formatINR, getGoogleMapsUrl } from '../format';
 import './Confirmation.css';
 
 export default function Confirmation() {
@@ -36,10 +37,32 @@ export default function Confirmation() {
               <span className="conf-value">{booking.theatre_name}</span>
             </div>
           )}
-          {booking.theatre_location && (
+          {booking.theatre_location ? (
             <div className="conf-row">
               <span className="conf-label">Location</span>
-              <span className="conf-value">{booking.theatre_location}</span>
+              <a
+                className="conf-value conf-location-link"
+                href={getGoogleMapsUrl(booking.theatre_name, booking.theatre_location)}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="View on Google Maps"
+              >
+                <svg className="conf-location-pin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                {booking.theatre_location}
+                <svg className="conf-location-external" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </a>
+            </div>
+          ) : (
+            <div className="conf-row">
+              <span className="conf-label">Location</span>
+              <span className="conf-value conf-location-unavailable">Not available</span>
             </div>
           )}
           <div className="conf-row">
@@ -60,7 +83,7 @@ export default function Confirmation() {
           </div>
           <div className="conf-row conf-total">
             <span className="conf-label">Total Amount</span>
-            <span className="conf-value total-price">₹{booking.total_amount.toFixed(0)}</span>
+            <span className="conf-value total-price">{formatINR(booking.total_amount)}</span>
           </div>
         </div>
 

@@ -6,6 +6,9 @@ import Home from './pages/Home';
 import MovieDetail from './pages/MovieDetail';
 import BookPage from './pages/BookPage';
 import Confirmation from './pages/Confirmation';
+import KidsZone from './pages/KidsZone';
+import MusicShows from './pages/MusicShows';
+import ComedyShows from './pages/ComedyShows';
 import { fetchMovies } from './api';
 import './App.css';
 
@@ -44,6 +47,9 @@ function App() {
             <Route path="/movie/:id" element={<MovieDetail />} />
             <Route path="/book/:showtimeId" element={<BookPage />} />
             <Route path="/confirmation/:ref" element={<Confirmation />} />
+            <Route path="/kids-zone" element={<KidsZone />} />
+            <Route path="/music-shows" element={<MusicShows />} />
+            <Route path="/comedy-shows" element={<ComedyShows />} />
           </Routes>
         </main>
         <Footer />

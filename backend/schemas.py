@@ -92,11 +92,21 @@ class ShowtimeOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
-# --- Seat ---
+# --- Seat with section & price tier ---
+class SectionInfo(BaseModel):
+    name: str                          # e.g. "Recliner", "Premium", "Executive", "Gold"
+    row_start: int                     # 0-based row index
+    row_end: int                       # 0-based row index (inclusive)
+    price_multiplier: float            # base price × multiplier
+    color: str                         # CSS color for section border/label
+
+
 class SeatOut(BaseModel):
     id: int
     row_label: str
     seat_number: int
+    section: Optional[str] = "Executive"
+    price_multiplier: Optional[float] = 1.0
     is_booked: bool = False
 
     model_config = {"from_attributes": True}
@@ -109,8 +119,10 @@ class SeatMapOut(BaseModel):
     theatre_location: str = ""
     rows: int
     cols: int
-    price: float
+    price: float                        # base price (for Silver/Standard seats)
     seats: list[SeatOut]
+    sections: list[SectionInfo] = []    # section definitions for frontend rendering
+    aisles: list[int] = []              # 1-based column indices where aisles appear
 
 
 # --- Booking ---
@@ -148,3 +160,30 @@ class BookingOut(BaseModel):
     seats: list[BookingSeatOut] = []
 
     model_config = {"from_attributes": True}
+
+
+# --- Event ---
+class EventOut(BaseModel):
+    id: int
+    title: str
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    category: str
+    artist_name: Optional[str] = None
+    venue: Optional[str] = None
+    city: Optional[str] = None
+    location: Optional[str] = None
+    event_date: datetime
+    event_time: Optional[str] = None
+    price: float
+    language: Optional[str] = None
+    age_recommendation: Optional[str] = None
+    rating: Optional[float] = 0
+    trending: Optional[int] = 0
+
+    model_config = {"from_attributes": True}
+
+
+class EventListOut(BaseModel):
+    events: list[EventOut]
+    cities: list[str]

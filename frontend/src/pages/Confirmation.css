@@ -72,15 +72,61 @@
   text-align: right;
 }
 
+/* Clickable location link on e-ticket */
+.conf-location-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-size: 0.85rem;
+}
+.conf-location-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.conf-location-pin {
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+.conf-location-link:hover .conf-location-pin {
+  opacity: 1;
+}
+.conf-location-external {
+  flex-shrink: 0;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+.conf-location-link:hover .conf-location-external {
+  opacity: 0.8;
+}
+.conf-location-unavailable {
+  color: var(--text-muted);
+  font-style: italic;
+  font-weight: 400;
+}
+
 .conf-total {
   margin-top: 0.25rem;
   padding-top: 0.75rem;
-  border-top: 2px solid var(--border);
+  border-top: 2px solid var(--accent);
+}
+
+.conf-total .conf-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .total-price {
-  color: var(--success);
-  font-size: 1.2rem;
+  color: var(--accent);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .confirmation-actions {

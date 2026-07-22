@@ -35,7 +35,10 @@ export default function Navbar({ search, onSearch, filters, onFilterChange, genr
         </div>
 
         <div className="navbar-actions">
-          <Link to="/" className="nav-link">Home</Link>
+          <Link to="/" className="nav-link">🎬 Movies</Link>
+          <Link to="/kids-zone" className="nav-link">🧒 Kids</Link>
+          <Link to="/music-shows" className="nav-link">🎵 Music</Link>
+          <Link to="/comedy-shows" className="nav-link">😂 Comedy</Link>
           <button className="mobile-toggle" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? '✕' : '☰'}
           </button>

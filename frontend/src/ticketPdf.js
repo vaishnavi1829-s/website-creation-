@@ -1,4 +1,5 @@
 import { jsPDF } from 'jspdf';
+import { formatINRPdf } from './format';
 
 /**
  * Generate and trigger download of a PDF ticket for a booking.
@@ -89,7 +90,7 @@ export function downloadTicketPdf(booking) {
   doc.text('Total Amount:', margin, y);
   doc.setTextColor(230, 57, 70);
   doc.setFontSize(18);
-  const amountText = `₹${booking.total_amount?.toFixed(0) || '0'}`;
+  const amountText = formatINRPdf(booking.total_amount);
   doc.text(amountText, pageW - margin - doc.getTextWidth(amountText), y);
   y += 12;
 

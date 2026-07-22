@@ -87,6 +87,8 @@ class Seat(Base):
     screen_id = Column(Integer, ForeignKey("screens.id"), nullable=False)
     row_label = Column(String(2), nullable=False)
     seat_number = Column(Integer, nullable=False)
+    section = Column(String(30), default="Executive")  # Recliner, Premium, Executive, Gold, Silver
+    price_multiplier = Column(Float, default=1.0)      # base_price × multiplier = seat price
 
     screen = relationship("Screen", back_populates="seats")
 
@@ -120,3 +122,24 @@ class BookingSeat(Base):
 
     booking = relationship("Booking", back_populates="booking_seats")
     seat = relationship("Seat")
+
+
+class Event(Base):
+    __tablename__ = "events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(255), nullable=False)
+    description = Column(Text)
+    image_url = Column(String(500))
+    category = Column(String(50), nullable=False, index=True)  # kids, music, comedy
+    artist_name = Column(String(200))       # artist, comedian, performer
+    venue = Column(String(255))
+    city = Column(String(100), index=True)
+    location = Column(String(300))
+    event_date = Column(DateTime, nullable=False)
+    event_time = Column(String(20))         # e.g. "7:00 PM"
+    price = Column(Float, nullable=False)
+    language = Column(String(50))
+    age_recommendation = Column(String(20))  # e.g. "3+", "All Ages"
+    rating = Column(Float, default=0)        # star rating for comedy/music
+    trending = Column(Integer, default=0)

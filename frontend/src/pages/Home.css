@@ -102,183 +102,331 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Now Showing by Theatre ── */
+/* ── Now Showing – Horizontal Carousel ── */
 .now-showing-section {
-  margin-top: -1rem;
+  margin-top: 1.5rem;
 }
 
-.theatre-list {
+.carousel-header {
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.theatre-group {
+.carousel-header .section-title {
+  margin-bottom: 0;
+}
+
+/* Navigation Arrows */
+.carousel-arrows {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.carousel-arrow {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  opacity: 1;
+  transform: scale(1);
+}
+
+.carousel-arrow:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 16px var(--accent-glow);
+  transform: scale(1.1);
+}
+
+.carousel-arrow--hidden {
+  opacity: 0.25;
+  pointer-events: none;
+  transform: scale(0.9);
+}
+
+/* Track */
+.carousel-track {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 0.25rem 1.5rem;
+  margin-top: 0.75rem;
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* IE/Edge */
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;                  /* Chrome/Safari/Opera */
+}
+
+/* Card */
+.carousel-card {
+  flex: 0 0 240px;
+  width: 240px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-}
-
-.theatre-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 0.9rem 1.25rem;
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border);
-}
-
-.theatre-name {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.theatre-location {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-.theatre-movies {
+  transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: default;
   display: flex;
   flex-direction: column;
 }
 
-.theatre-movie-card {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--border);
-  transition: background var(--transition);
+.carousel-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--accent);
+  box-shadow: 0 12px 40px rgba(230, 57, 70, 0.18), 0 6px 24px rgba(0, 0, 0, 0.5);
 }
 
-.theatre-movie-card:last-child {
-  border-bottom: none;
-}
-
-.theatre-movie-card:hover {
-  background: var(--bg-card-hover);
-}
-
-.tms-poster {
-  flex-shrink: 0;
-  width: 90px;
-  height: 130px;
-  border-radius: var(--radius-sm);
+/* Poster */
+.carousel-card-poster {
+  position: relative;
+  width: 100%;
+  height: 310px;
   overflow: hidden;
   cursor: pointer;
-  transition: transform var(--transition), box-shadow var(--transition);
   background: var(--bg-surface);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  flex-shrink: 0;
 }
 
-.tms-poster:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 20px var(--accent-glow);
-}
-
-.tms-poster img {
+.carousel-card-poster img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.tms-poster .no-poster,
-.tms-no-poster {
+.carousel-card:hover .carousel-card-poster img {
+  transform: scale(1.08);
+}
+
+/* Poster placeholder */
+.carousel-no-poster {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 8px;
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
 }
 
-.tms-placeholder-icon {
-  width: 28px;
-  height: 28px;
+.carousel-no-poster svg {
+  width: 48px;
+  height: 48px;
   opacity: 0.5;
 }
 
-.tms-placeholder-text {
-  font-size: 0.55rem;
+.carousel-no-poster span {
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Badges on poster */
+.carousel-imdb-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  color: var(--gold);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  line-height: 1;
+  border: 1px solid rgba(255, 215, 0, 0.25);
+}
+
+.carousel-cert-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: var(--accent);
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.4;
   letter-spacing: 0.3px;
 }
 
-.tms-details {
-  flex: 1;
-  min-width: 0;
+/* Hover overlay */
+.carousel-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10, 10, 15, 0.92) 0%, rgba(10, 10, 15, 0.3) 50%, transparent 100%);
   display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.35s ease;
 }
 
-.tms-title {
-  font-size: 1rem;
+.carousel-card:hover .carousel-card-overlay {
+  opacity: 1;
+}
+
+.carousel-watch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.5rem 1.25rem;
+  border-radius: 24px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(230, 57, 70, 0.4);
+}
+
+.carousel-card:hover .carousel-watch-btn {
+  transform: translateY(-2px);
+}
+
+/* Info section */
+.carousel-card-info {
+  padding: 0.9rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  flex: 1;
+}
+
+.carousel-card-title {
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-primary);
   cursor: pointer;
-  transition: color var(--transition);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+  line-height: 1.3;
 }
 
-.tms-title:hover {
+.carousel-card-title:hover {
   color: var(--accent);
 }
 
-.tms-meta {
-  font-size: 0.78rem;
+.carousel-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.carousel-meta-tag {
+  font-size: 0.62rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  line-height: 1.6;
+}
+
+.carousel-genre-tag {
+  background: #3a2d40;
+  color: #ce93d8;
+}
+
+.carousel-lang-tag {
+  background: #2d4059;
+  color: #81c784;
+}
+
+.carousel-cert-tag {
+  background: rgba(230, 57, 70, 0.15);
+  color: var(--accent);
+}
+
+.carousel-card-details {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
   color: var(--text-secondary);
 }
 
-.tms-showtimes {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.2rem;
+.carousel-dot {
+  color: var(--text-muted);
+  font-size: 0.5rem;
 }
 
-.tms-date-group {
+.carousel-imdb-text {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+/* Theatre name */
+.carousel-card-theatre {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-
-.tms-date {
-  font-size: 0.75rem;
-  font-weight: 600;
+  gap: 5px;
+  font-size: 0.7rem;
   color: var(--text-muted);
-  min-width: 70px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+  margin-top: 2px;
 }
 
-.tms-times {
+.carousel-card-theatre svg {
+  flex-shrink: 0;
+}
+
+.carousel-card-theatre span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Showtime chips */
+.carousel-showtimes {
   display: flex;
-  gap: 0.4rem;
   flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
 }
 
-.tms-time-btn {
-  padding: 0.35rem 0.75rem;
-  font-size: 0.78rem;
+.carousel-time-chip {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--accent);
   background: transparent;
   border: 1px solid var(--accent);
-  border-radius: 20px;
+  border-radius: 16px;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.tms-time-btn:hover {
+.carousel-time-chip:hover {
   background: var(--accent);
   color: #fff;
   box-shadow: 0 2px 12px var(--accent-glow);
@@ -290,9 +438,68 @@
   .hero-content h1 { font-size: 1.8rem; }
   .hero-content p { font-size: 0.95rem; }
   .section-title { font-size: 1.15rem; }
-  .theatre-header { flex-direction: column; align-items: flex-start; }
-  .theatre-movie-card { flex-direction: row; gap: 0.75rem; }
-  .tms-poster { width: 80px; height: 115px; }
-  .tms-date { min-width: 55px; font-size: 0.7rem; }
-  .tms-time-btn { font-size: 0.72rem; padding: 0.3rem 0.6rem; }
+
+  .carousel-arrows { display: none; }
+
+  .carousel-track {
+    gap: 0.85rem;
+    padding: 0.5rem 0.25rem 1rem;
+  }
+
+  .carousel-card {
+    flex: 0 0 175px;
+    width: 175px;
+  }
+
+  .carousel-card-poster {
+    height: 240px;
+  }
+
+  .carousel-card-info {
+    padding: 0.6rem 0.7rem 0.75rem;
+    gap: 0.3rem;
+  }
+
+  .carousel-card-title {
+    font-size: 0.82rem;
+  }
+
+  .carousel-meta-tag {
+    font-size: 0.58rem;
+    padding: 0.1rem 0.4rem;
+  }
+
+  .carousel-card-details {
+    font-size: 0.68rem;
+  }
+
+  .carousel-time-chip {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel-card {
+    flex: 0 0 150px;
+    width: 150px;
+  }
+
+  .carousel-card-poster {
+    height: 210px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .carousel-card-overlay {
+    display: none;
+  }
+  .carousel-card:hover {
+    transform: none;
+    border-color: var(--border);
+    box-shadow: none;
+  }
+  .carousel-card:hover .carousel-card-poster img {
+    transform: none;
+  }
 }

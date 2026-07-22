@@ -2,14 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import engine, Base
-from routers import movies, showtimes, bookings, auth, theatres, posters
+from routers import movies, showtimes, bookings, auth, theatres, posters, events
 
-# Create tables
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="CineBook - Movie Ticket Booking", version="2.1.0")
+app = FastAPI(title="CineBook - Movie Ticket Booking", version="2.2.0")
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,15 +16,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
 app.include_router(movies.router)
 app.include_router(showtimes.router)
 app.include_router(bookings.router)
 app.include_router(auth.router)
 app.include_router(theatres.router)
 app.include_router(posters.router)
+app.include_router(events.router)
 
 
 @app.get("/")
 def root():
-    return {"message": "CineBook API is running"}
+    return {"message": "CineBook API v2.2"}

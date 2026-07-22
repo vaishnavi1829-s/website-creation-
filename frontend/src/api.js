@@ -171,3 +171,23 @@ export async function fetchMe() {
 export function isLoggedIn() {
   return !!getToken();
 }
+
+// --- Events (Kids Zone, Music Shows, Comedy Shows) ---
+export async function fetchEvents(category = '', search = '', city = '', language = '', minPrice = null, maxPrice = null) {
+  const params = new URLSearchParams();
+  if (category) params.set('category', category);
+  if (search) params.set('search', search);
+  if (city) params.set('city', city);
+  if (language) params.set('language', language);
+  if (minPrice !== null) params.set('min_price', minPrice);
+  if (maxPrice !== null) params.set('max_price', maxPrice);
+  const res = await fetch(`${API_BASE}/events?${params}`);
+  if (!res.ok) throw new Error('Failed to fetch events');
+  return res.json();
+}
+
+export async function fetchEvent(id) {
+  const res = await fetch(`${API_BASE}/events/${id}`);
+  if (!res.ok) throw new Error('Event not found');
+  return res.json();
+}

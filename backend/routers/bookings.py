@@ -93,7 +93,11 @@ def create_booking(
     while db.query(Booking).filter(Booking.booking_ref == booking_ref).first():
         booking_ref = generate_booking_ref()
 
-    total = showtime.price * len(data.seat_ids)
+    # Tiered pricing based on seat section
+    total = 0
+    for seat in seats:
+        multiplier = seat.price_multiplier if seat.price_multiplier else 1.0
+        total += round(showtime.price * multiplier)
 
     booking = Booking(
         booking_ref=booking_ref,
